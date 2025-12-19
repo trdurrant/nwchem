@@ -112,6 +112,7 @@ c
       write(lfngrd,'(i10,f20.10)') ngrid,charge
       do i=1,ngrid
         write(lfngrd,'(4f20.10)') (grid(j,i),j=1,3),val(i)
+        write(6,'(4f20.10)') (grid(j,i),j=1,3),val(i)
       enddo
       close(unit=lfngrd)
       endif
