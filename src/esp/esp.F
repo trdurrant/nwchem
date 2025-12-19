@@ -49,6 +49,10 @@ c
       call ecce_print_module_entry('nwesp')
       endif
       endif
+      
+      write(lfnout,*) "newgrd", newgrd
+      write(lfnout,*) "newpot", newpot
+      write(lfnout,*) "nofit", nofit
 c
 c     allocate memory
 c
@@ -56,61 +60,70 @@ c
 c
 c     setup the esp grid
 c
+      write(lfnout,*) "Call to esp_grid"
       call esp_grid(dbl_mb(ixptr),dbl_mb(iqptr),dbl_mb(igptr),
      + dbl_mb(ivptr))
 c
 c     write input variables to output     
 c
+      write(lfnout,*) "Call to esp_wrtinp"
       call esp_wrtinp(dbl_mb(iqptr))
 c
 c     calculate the electrostatic potential on the grid
 c
-      if(newgrd.ne.0.or.denmat.ne.0) then 
-         if(me.eq.0) write(6,*) 'FASTESP ',fastesp
-         if(fastesp) then
-            call esp_fastesp(dbl_mb(ieptr), !ene
-     +           dbl_mb(ioptr), !occ 
-     +           dbl_mb(idptr), !dns
-     +           dbl_mb(ixptr), !x
-     +           dbl_mb(iqptr), !q
-     +           dbl_mb(igptr), !grid
-     +           dbl_mb(ivptr)) !val
-         else
-            call esp_esp(dbl_mb(ieptr), !ene
-     +           dbl_mb(ioptr), !occ 
-     +           dbl_mb(idptr), !dns
-     +           dbl_mb(ixptr), !x
-     +           dbl_mb(iqptr), !q
-     +           dbl_mb(igptr), !grid
-     +           dbl_mb(ivptr)) !val
-         endif
-      end if ! newgrd, denmat
+      if(newpot.eq.1) then
+        write(lfnout,*) "New pot requested"
+        if(newgrd.ne.0.or.denmat.ne.0) then 
+           if(me.eq.0) write(6,*) 'FASTESP ',fastesp
+           if(fastesp) then
+              call esp_fastesp(dbl_mb(ieptr), !ene
+     +             dbl_mb(ioptr), !occ 
+     +             dbl_mb(idptr), !dns
+     +             dbl_mb(ixptr), !x
+     +             dbl_mb(iqptr), !q
+     +             dbl_mb(igptr), !grid
+     +             dbl_mb(ivptr)) !val
+           else
+              call esp_esp(dbl_mb(ieptr), !ene
+     +             dbl_mb(ioptr), !occ 
+     +             dbl_mb(idptr), !dns
+     +             dbl_mb(ixptr), !x
+     +             dbl_mb(iqptr), !q
+     +             dbl_mb(igptr), !grid
+     +             dbl_mb(ivptr)) !val
+           endif
+        end if ! newgrd, denmat
+      end if ! newpot
+
+      if(nofit.eq.0) then
+         write(lfnout,*) "Starting charge fitting"
 c
-c     do the fitting
+c        do the fitting
 c
-      call esp_fit(dbl_mb(igptr),dbl_mb(ivptr),dbl_mb(ixptr),
-     + dbl_mb(iqptr),dbl_mb(iaptr),dbl_mb(ibptr),dbl_mb(icptr),
-     + dbl_mb(iakptr),dbl_mb(iqkptr),int_mb(inptr),dbl_mb(iqfptr),
-     + int_mb(ilptr),byte_mb(itptr))
+         call esp_fit(dbl_mb(igptr),dbl_mb(ivptr),dbl_mb(ixptr),
+     +    dbl_mb(iqptr),dbl_mb(iaptr),dbl_mb(ibptr),dbl_mb(icptr),
+     +    dbl_mb(iakptr),dbl_mb(iqkptr),int_mb(inptr),dbl_mb(iqfptr),
+     +    int_mb(ilptr),byte_mb(itptr))
 c
-c     calculate the electrical moments
+c        calculate the electrical moments
 c
-      call esp_elemom(dbl_mb(ixptr),dbl_mb(iqfptr))
+         call esp_elemom(dbl_mb(ixptr),dbl_mb(iqfptr))
 c
-c     calculate rms deviation
+c        calculate rms deviation
 c
-      call esp_rms(dbl_mb(ixptr),dbl_mb(iqfptr),dbl_mb(igptr),
-     + dbl_mb(ivptr))
+         call esp_rms(dbl_mb(ixptr),dbl_mb(iqfptr),dbl_mb(igptr),
+     +    dbl_mb(ivptr))
 c
-c     write results
+c        write results
 c
-      call esp_out(byte_mb(itptr),dbl_mb(ixptr),dbl_mb(iqfptr),
-     + dbl_mb(igptr),dbl_mb(ivptr))
+         call esp_out(byte_mb(itptr),dbl_mb(ixptr),dbl_mb(iqfptr),
+     +    dbl_mb(igptr),dbl_mb(ivptr))
 c
-c     electrostatic potential from partial charges on full grid
+c        electrostatic potential from partial charges on full grid
 c
-      call esp_plt(dbl_mb(ixptr),dbl_mb(iqfptr),dbl_mb(igptr),
-     + byte_mb(itptr))
+         call esp_plt(dbl_mb(ixptr),dbl_mb(iqfptr),dbl_mb(igptr),
+     +    byte_mb(itptr))
+      end if ! nofit
 c
 c     deallocate memory
 c
