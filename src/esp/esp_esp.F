@@ -37,6 +37,7 @@ c
 c
 c     get the density matrix, occupation and energies
 c
+      write(6,*) "Call to esp_denmat from", me
       call esp_denmat(occ,ene)
 c
       if (lscrn.ne.0) call schwarz_init(igeom,ibasis)
@@ -45,6 +46,7 @@ c     get electrostatic potential on the grid points
 c
       do i=1,ngrid
          val(i)=0.0d0
+         write(6,*) i, val(i)
       end do
 c
 c     estimate mem. req.
@@ -54,13 +56,11 @@ c
       no_batches=nint(dble(maxbuf+maxscr)/dble(avail))
       no_batches=max(no_batches,1)
       ngrid_batches=ngrid/no_batches
-#ifdef DEBUG
       if(me.eq.0) then
       write(6,*) ' avail ',avail
       write(6,*) ' no_batches ',no_batches
       write(6,*) ' ngrid_batches ',ngrid_batches
       endif
-#endif
       iptr=1
       do batch=1,no_batches
          if(batch.eq.no_batches) ngrid_batches=ngrid-iptr+1
