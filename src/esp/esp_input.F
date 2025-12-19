@@ -38,6 +38,8 @@ c
      +   newgrd=0
       if (.not. rtdb_get(irtdb, 'esp:newpot', MT_INT, 1, newpot))
      +   newpot=0
+      if (.not. rtdb_get(irtdb, 'esp:nofit', MT_INT, 1, nofit))
+     +   nofit=0
  
       ncon=0
       nconst=0
@@ -49,7 +51,6 @@ c
       scrtol=1.0d-9
       toler=1.0d-4
       maxit=25
-      nofit=0
       resa=0.0d0
       resb=0.0d0
       resc=0.0d0
