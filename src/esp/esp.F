@@ -71,29 +71,27 @@ c
 c
 c     calculate the electrostatic potential on the grid
 c
-      if(newpot.eq.1) then
+        if(newpot.ne.0.or.denmat.ne.0) then 
         write(lfnout,*) "New pot requested"
-        if(newgrd.ne.0.or.denmat.ne.0) then 
-           if(me.eq.0) write(6,*) 'FASTESP ',fastesp
-           if(fastesp) then
-              call esp_fastesp(dbl_mb(ieptr), !ene
-     +             dbl_mb(ioptr), !occ 
-     +             dbl_mb(idptr), !dns
-     +             dbl_mb(ixptr), !x
-     +             dbl_mb(iqptr), !q
-     +             dbl_mb(igptr), !grid
-     +             dbl_mb(ivptr)) !val
-           else
-              call esp_esp(dbl_mb(ieptr), !ene
-     +             dbl_mb(ioptr), !occ 
-     +             dbl_mb(idptr), !dns
-     +             dbl_mb(ixptr), !x
-     +             dbl_mb(iqptr), !q
-     +             dbl_mb(igptr), !grid
-     +             dbl_mb(ivptr)) !val
-           endif
-        end if ! newgrd, denmat
-      end if ! newpot
+         if(me.eq.0) write(6,*) 'FASTESP ',fastesp
+         if(fastesp) then
+            call esp_fastesp(dbl_mb(ieptr), !ene
+     +           dbl_mb(ioptr), !occ 
+     +           dbl_mb(idptr), !dns
+     +           dbl_mb(ixptr), !x
+     +           dbl_mb(iqptr), !q
+     +           dbl_mb(igptr), !grid
+     +           dbl_mb(ivptr)) !val
+         else
+            call esp_esp(dbl_mb(ieptr), !ene
+     +           dbl_mb(ioptr), !occ 
+     +           dbl_mb(idptr), !dns
+     +           dbl_mb(ixptr), !x
+     +           dbl_mb(iqptr), !q
+     +           dbl_mb(igptr), !grid
+     +           dbl_mb(ivptr)) !val
+         endif
+      end if ! newgrd, denmat
 
       if(nofit.eq.0) then
          write(lfnout,*) "Starting charge fitting"
