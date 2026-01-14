@@ -56,6 +56,12 @@ c     ----------------------------------------------------------
           if (.not. rtdb_cget(rtdb,'scf:input vectors',1,vectors_in))
      &        call errquit(pname//'rtdb_cget failed', 100,
      &                     RTDB_ERR)
+       elseif (theory.eq.'mp2' .or. theory.eq.'direct_mp2') then
+          call util_file_name('mp2nos',.false.,.false.,vectors_in)
+       else
+          call errquit(pname//'bq forces not implemented for theory',
+     &      555,
+     &      INPUT_ERR)
        endif
 
       if (.not. rtdb_cput(rtdb,'prop:vectors',1,vectors_in))
@@ -167,6 +173,13 @@ c     ----------------------------------------------------------
           if (.not. rtdb_cget(rtdb,'scf:input vectors',1,vectors_in))
      &        call errquit(pname//'rtdb_cget failed', 100,
      &                     RTDB_ERR)
+       elseif (theory.eq.'mp2' .or. theory.eq.'direct_mp2') then
+          call util_file_name('mp2nos',.false.,.false.,vectors_in)
+       else
+          call errquit(pname//'bq forces not implemented for theory',
+     &      555,
+     &      INPUT_ERR)
+          
        endif
 
       if (.not. rtdb_cput(rtdb,'prop:vectors',1,vectors_in))
