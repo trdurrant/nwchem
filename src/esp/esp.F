@@ -49,10 +49,6 @@ c
       call ecce_print_module_entry('nwesp')
       endif
       endif
-      
-      write(lfnout,*) "newgrd", newgrd
-      write(lfnout,*) "newpot", newpot
-      write(lfnout,*) "nofit", nofit
 c
 c     allocate memory
 c
@@ -60,19 +56,16 @@ c
 c
 c     setup the esp grid
 c
-      write(lfnout,*) "Call to esp_grid"
       call esp_grid(dbl_mb(ixptr),dbl_mb(iqptr),dbl_mb(igptr),
      + dbl_mb(ivptr))
 c
 c     write input variables to output     
 c
-      write(lfnout,*) "Call to esp_wrtinp"
       call esp_wrtinp(dbl_mb(iqptr))
 c
 c     calculate the electrostatic potential on the grid
 c
         if(newpot.ne.0.or.denmat.ne.0) then 
-        write(lfnout,*) "New pot requested"
          if(me.eq.0) write(6,*) 'FASTESP ',fastesp
          if(fastesp) then
             call esp_fastesp(dbl_mb(ieptr), !ene
@@ -94,7 +87,6 @@ c
       end if ! newgrd, denmat
 
       if(nofit.eq.0) then
-         write(lfnout,*) "Starting charge fitting"
 c
 c        do the fitting
 c

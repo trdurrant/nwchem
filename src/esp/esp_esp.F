@@ -37,7 +37,6 @@ c
 c
 c     get the density matrix, occupation and energies
 c
-      write(6,*) "Call to esp_denmat from", me
       call esp_denmat(occ,ene)
 c
       if (lscrn.ne.0) call schwarz_init(igeom,ibasis)
@@ -46,7 +45,6 @@ c     get electrostatic potential on the grid points
 c
       do i=1,ngrid
          val(i)=0.0d0
-         write(6,*) i, val(i)
       end do
 c
 c     estimate mem. req.
@@ -112,7 +110,6 @@ c
       write(lfngrd,'(i10,f20.10)') ngrid,charge
       do i=1,ngrid
         write(lfngrd,'(4f20.10)') (grid(j,i),j=1,3),val(i)
-        write(6,'(4f20.10)') (grid(j,i),j=1,3),val(i)
       enddo
       close(unit=lfngrd)
       endif
