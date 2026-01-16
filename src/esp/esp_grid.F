@@ -16,7 +16,6 @@ c
       integer i,ix,iy,iz,ia,j
 c
 
-      print*, "esp_grid with newgrd", newgrd
       if(newgrd.eq.0) then
         if(me.eq.0) then
           call util_file_name('grid',.false.,.false.,grdfil)

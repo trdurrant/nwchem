@@ -54,11 +54,13 @@ c
       no_batches=nint(dble(maxbuf+maxscr)/dble(avail))
       no_batches=max(no_batches,1)
       ngrid_batches=ngrid/no_batches
+#ifdef DEBUG
       if(me.eq.0) then
       write(6,*) ' avail ',avail
       write(6,*) ' no_batches ',no_batches
       write(6,*) ' ngrid_batches ',ngrid_batches
       endif
+#endif
       iptr=1
       do batch=1,no_batches
          if(batch.eq.no_batches) ngrid_batches=ngrid-iptr+1
