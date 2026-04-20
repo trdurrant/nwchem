@@ -234,6 +234,7 @@ c.. incore structures
       integer bas_nassoc
       logical bsactive 
       logical bas_spherical
+      logical bas_upcase
       logical bas_any_gc
       logical bas_any_sp_shell
 c
@@ -259,6 +260,7 @@ c......... above for each basis is stored ... below is in-core
      &       bas_spherical(nbasis_bsmx),
      &       bas_any_gc(nbasis_bsmx),
      &       bas_any_sp_shell(nbasis_bsmx),
+     L	     bas_upcase(nbasis_bsmx),
      &       bas_norm_id(nbasis_bsmx),
      &       angular_bs(nbasis_bsmx),
      &       nbfmax_bs(nbasis_bsmx),

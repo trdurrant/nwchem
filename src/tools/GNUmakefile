@@ -464,6 +464,16 @@ ifneq ($(ELPA),)
     else
         MAYBE_ELPA = --with-elpa="$(strip $(ELPA))"
     endif
+    ifneq ($(ELPA_NVIDIA),)
+        FFLAGS_FORGA += -DHAVE_ELPA_NVIDIA
+    endif
+    ifdef USE_OPENMP
+       ifneq (,$(wildcard ${HOMEBREW_PREFIX}/opt/libomp/lib/libomp.a))
+          LDFLAGS_FORGA += -L$(HOMEBREW_PREFIX)/opt/libomp/lib -lomp
+       else
+          LDFLAGS_FORGA += -fopenmp
+       endif
+    endif
 endif
 
 ifneq ($(SCALAPACK),)
@@ -594,6 +604,7 @@ ifeq ($(PE_ENV),CRAY)
    FFLAGS_FORGA +=-O0 -g
 endif
 
+
 ifeq ($(GOTFREEBSD),1)
     UNSETFLAGS_FORGA = LDFLAGS=" " CPPFLAGS=" " LIBS=" "
 endif
@@ -606,6 +617,9 @@ ifdef CFLAGS_FORGA
 endif
 ifdef CXXFLAGS_FORGA
     MAYBE_CXXFLAGS=CXXFLAGS="$(CXXFLAGS_FORGA)"
+endif
+ifdef LDFLAGS_FORGA
+    MAYBE_LDFLAGS=LDFLAGS="$(LDFLAGS_FORGA)"
 endif
 # End conversion of env vars to configure options
 USE_GAGITHUB=1
@@ -693,7 +707,7 @@ BUILDDIR = build
 INSTALLDIR = install
 CONFIGURE_PATH = ../$(GA_DIR)/configure
 TOOLDIR := $(shell pwd)
-CONFIGURE_ARGS = --prefix=$(TOOLDIR)/$(INSTALLDIR) $(MAYBE_HOST) --with-tcgmsg $(MAYBE_MPI) $(MAYBE_PEIGS) --enable-underscoring --disable-mpi-tests $(MAYBE_SCALAPACK) $(MAYBE_ELPA) $(MAYBE_LAPACK) $(MAYBE_BLAS) $(MAYBE_ARMCI) $(MAYBE_CC) $(MAYBE_MPICC) $(MAYBE_CXX) $(MAYBE_MPICXX) $(MAYBE_F77) $(MAYBE_MPIF77) $(MAYBE_FFLAGS) $(MAYBE_CFLAGS) $(MAYBE_CXXFLAGS) $(MAYBE_OFFLOAD) $(MAYBE_SYSVSHMEM) $(MAYBE_EISPACK) $(UNSETFLAGS_FORGA)
+CONFIGURE_ARGS = --prefix=$(TOOLDIR)/$(INSTALLDIR) $(MAYBE_HOST) --with-tcgmsg $(MAYBE_MPI) $(MAYBE_PEIGS) --enable-underscoring --disable-mpi-tests $(MAYBE_SCALAPACK) $(MAYBE_ELPA) $(MAYBE_LAPACK) $(MAYBE_BLAS) $(MAYBE_ARMCI) $(MAYBE_CC) $(MAYBE_MPICC) $(MAYBE_CXX) $(MAYBE_MPICXX) $(MAYBE_F77) $(MAYBE_MPIF77) $(MAYBE_FFLAGS) $(MAYBE_CFLAGS) $(MAYBE_CXXFLAGS) $(MAYBE_LDFLAGS) $(MAYBE_OFFLOAD) $(MAYBE_SYSVSHMEM) $(MAYBE_EISPACK) $(UNSETFLAGS_FORGA)
 SPACE :=
 SPACE +=
 STAMP_FC = $(subst /,-,$(subst $(SPACE),-,$(strip $(FC))).FC.stamp)

@@ -18,8 +18,8 @@
 
 
 [![All Releases tags](https://img.shields.io/github/release/nwchemgit/nwchem/all.svg)](https://github.com/nwchemgit/nwchem/releases)
-![GitHub Release Date](https://img.shields.io/github/release-date/nwchemgit/nwchem)
-[![EMSL](https://rawgit.com/nwchemgit/nwchem/master/contrib/git.nwchem/emsl_logo2.svg)](https://www.emsl.pnl.gov)
+![GitHub Release Date](https://img.shields.io/github/release-date/nwchemgit/nwchem)  
+[![EMSL](https://raw.githubusercontent.com/nwchemgit/nwchem/179015c5af4f2b1b397a7f039b85a9aa202f4139/contrib/git.nwchem/emsl_logo2.svg)](https://www.emsl.pnl.gov)
  
 ## NWChem: Open Source High-Performance Computational Chemistry
 <img alt="NWChem logo" src="https://raw.githubusercontent.com/nwchemgit/nwchem/master/contrib/git.nwchem/MS3_logo_cropped.png" align=middle width="102pt" height="117pt"/>  

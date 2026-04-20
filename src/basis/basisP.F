@@ -513,3 +513,24 @@ c
         endif
       endif
       end
+      logical function bas_set_upcase(basisin, oupcase)
+      implicit none
+#include "nwc_const.fh"
+#include "basP.fh"
+#include "basdeclsP.fh"
+c
+      integer basisin    ! [input] basis set handle
+      logical oupcase ! [input] logical for upcase setting
+c
+      integer basis
+c
+      bas_set_upcase = .false.
+c
+      basis = basisin + BASIS_HANDLE_OFFSET
+      if (oupcase) then
+        bas_upcase(basis) = .true.
+      else
+        bas_upcase(basis) = .false.
+      endif
+      bas_set_upcase = .true.
+      end

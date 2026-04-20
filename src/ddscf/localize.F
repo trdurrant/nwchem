@@ -227,6 +227,7 @@ c
 #include "geom.fh"
 #include "bas.fh"
 #include "util.fh"
+#include "stdio.fh"
 c
 c     Localize the nloc orbitals in iloc() by mixing with each other
 c
@@ -251,10 +252,10 @@ c     locpow (localization sum exponent) should be 2 or 4
       gamma_tol = 1d-10
 c
       if (ga_nodeid() .eq. 0) then
-        write(6,9001)
+        write(luout,9001)
  9001   format(/10x,' iter   Max. delocal   Mean delocal    Converge'/
      &          10x,' ----   ------------   ------------    --------')
-         call util_flush(6)
+         call util_flush(luout)
       end if
 c
       dprev = 0.0d0
@@ -281,7 +282,7 @@ c
                end do
                qs = qs + qas**2
             end do
-*            write(6,*) ' ds ', s, 1.0d0/qs
+*            write(luout,*) ' ds ', s, 1.0d0/qs
             dmax = max(dmax, 1.0d0/qs)
             d = d + 1.0d0/qs
          end do
@@ -298,9 +299,9 @@ c
          call ga_dgop(2, d , 1, '+')
 c
          if (ga_nodeid() .eq. 0) then
-           write(6,'(10x, i5, 2f15.10, 1p,d12.2,d12.2)')
+           write(luout,'(10x, i5, 2f15.10, 1p,d12.2,d12.2)')
      &       iter, dmax, d/dble(nloc), gamma_max
-           call util_flush(6)
+           call util_flush(luout)
          end if
          call ga_sync
 c
@@ -318,7 +319,7 @@ c
                if (tt .le. nloc) then
                   s = iloc(ss)
                   t = iloc(tt)
-*                  write(6,*) nloc, neven, set, pair, ss, tt, s, t
+*                  write(luout,*) nloc, neven, set, pair, ss, tt, s, t
                   call ga_get(g_c,  1, nbf, s, s, c(1,1), 1)
                   call ga_get(g_sc, 1, nbf, s, s,sc(1,1), 1)
                   call ga_get(g_c,  1, nbf, t, t, c(1,2), 1)
@@ -408,6 +409,7 @@ c
 #include "geom.fh"
 #include "bas.fh"
 #include "util.fh"
+#include "stdio.fh"
 c
 c     Localize the nloc orbitals in iloc(*) by mixing with each other
 c
@@ -441,17 +443,17 @@ c
       u21 = util_random(12345)
 c
       if (ga_nodeid() .eq. 0) then
-        write(6,9001)
+        write(luout,9001)
  9001   format(/10x,' iter   Max. dipole2   Mean dipole2    Converge'/
      &          10x,' ----   ------------   ------------    --------')
-        call util_flush(6)
+        call util_flush(luout)
       end if
 c
       dprev = 0.0d0
       gamma_max = 0.0d0
       call ga_distribution(g_uc(1), ga_nodeid(),
      I          ilo, ihi, jlo, jhi)
-      do iter = 1, 100
+      do iter = 1, 900
          call ga_sync
          nrot = 0
 c
@@ -496,9 +498,9 @@ c
          call ga_dgop(2, d , 1, '+')
 c
          if (ga_nodeid() .eq. 0) then
-           write(6,'(10x, i5, 2f17.8, 1p,2d12.2)')
+           write(luout,'(10x, i5, 2f17.8, 1p,2d12.2)')
      &       iter, dmax, d/dble(nloc), gamma_max
-           call util_flush(6)
+           call util_flush(luout)
          end if
          call ga_sync
 c
@@ -521,7 +523,7 @@ cold            do pair = 1+ga_nodeid(), neven/2, ga_nnodes()
 c     if g_uxc.s belongs to ga_nodeid, do
                   if(s.ge.jlo.and.s.le.jhi) then
                   t = iloc(tt)
-*                  write(6,*) nloc, neven, set, pair, ss, tt, s, t
+*                  write(luout,*) nloc, neven, set, pair, ss, tt, s, t
                   call ga_get(g_c,ilo, ihi, s, s, c(1,1), 1)
                   call ga_get(g_c,ilo, ihi, t, t, c(1,2), 1)
                   do x = 1, 4
@@ -547,7 +549,7 @@ c
                      ast = ast + u12*u12 - 0.25d0*(u1-u2)**2
                      bst = bst + u12*(u1 - u2)
                      if (abs(u12-u21)/max(1.0d0,abs(u12)).gt.1d-8) then
-                        write(6,*) ' U12, U21 ', u12, u21
+                        write(luout,*) ' U12, U21 ', u12, u21
                         call errquit('bad u12', 0, UNKNOWN_ERR)
                      endif
                   end do
@@ -584,13 +586,16 @@ c
             call ga_sync
          end do ! do set
       end do ! do iter
+      if(ga_nodeid().eq.0) write(luout,*)
+     W     ' WARNING: Foster-Boys solver not converged'
 c
  1000 continue
 c
 c     Analyze localization of each mo
 c
       if (ga_nodeid() .eq. 0) then
-         write(6,*)
+         write(luout,*)
+         write(luout,*) ' Orbital Localization Analysis by atom'
          do ss = 1, nloc
             s = iloc(ss)
             call ga_get(g_c,  1, nbf, s, s, c(1,1), 1)
@@ -621,10 +626,10 @@ c
                   end if
                end do
             end do
-            write(6,9002) s, (list(a), pop(a), a=1,nlist)
+            write(luout,9002) s, (list(a), pop(a), a=1,nlist)
  9002         format(i5, 100(2x,i4,'(',f5.2,')'))
          end do
-         call util_flush(6)
+         call util_flush(luout)
       end if
 c
       call ga_sync

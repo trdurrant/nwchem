@@ -32,13 +32,6 @@ if [[ "$arch" == "aarch64" ]]; then
 	export OMPI_FC=nvfortran
 	env|egrep FC
 	nvfortran -V
-    else
-#should be gfortran	
-	if [[ "$NWCHEM_MODULES" == "tce" ]]; then 
-	    FOPT="-O0 -fno-aggressive-loop-optimizations"
-	else
-	    FOPT="-O1 -fno-aggressive-loop-optimizations"
-	fi
     fi
 else
     if [[ "$FC" == "ifort" ]] || [[ "$FC" == "ifx" ]] ; then
@@ -128,6 +121,12 @@ echo    "$FOPT$FDOPT"
      make
      cd $TRAVIS_BUILD_DIR/src
      $TRAVIS_BUILD_DIR/contrib/getmem.nwchem 1000
+     echo  === ldd ====
+     if [[ "$os" == "Darwin" ]]; then
+	 otool -L ../bin/MACX*/nwchem
+     else
+	 ldd ../bin/LINUX*/nwchem
+     fi
  #caching
  mkdir -p $TRAVIS_BUILD_DIR/.cachedir/binaries/$NWCHEM_TARGET $TRAVIS_BUILD_DIR/.cachedir/files
  cp $TRAVIS_BUILD_DIR/bin/$NWCHEM_TARGET/nwchem  $NWCHEM_EXECUTABLE

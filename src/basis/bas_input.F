@@ -12,7 +12,7 @@ c $Id$
 c
 c   basis [<name>] [library [<standard set>] [file <filename>] \
 c         [spherical|cartesian] [segment||nosegment] [print|noprint]\
-c         [ecpset ecp_name] [soset so_name] [rel] [bse]
+c         [ecpset ecp_name] [soset so_name] [rel] [bse] [uppercase]
 c
 c     tag library [tag in library] <standard set> [file <filename>]
 c     tag <shell type>
@@ -53,23 +53,24 @@ c::passed
       integer rtdb              ! [input] handle to database
 c::local
       integer nopt
-      parameter (nopt = 13)
+      parameter (nopt = 14)
       character*10 opts(nopt)
       character*255 test, name, filename, standard
       character*255 ecpname, soname
       character*256 mydir
       character*1000 errmsg
-      logical status, ospherical, osegment, oprint
+      logical status, ospherical, osegment, oprint, oupcase
       logical o_add_ecpname, o_add_soname
       logical oHas_Star
       logical oIs_ecp, oIs_so, oIs_rel
       integer ind, basis
-      logical bas_add_ucnt_init, bas_set_spherical, bas_add_ucnt_tidy
-      external bas_add_ucnt_init, bas_set_spherical
+      logical bas_add_ucnt_init, bas_set_spherical, bas_add_ucnt_tidy,
+     B     bas_set_upcase
+      external bas_add_ucnt_init, bas_set_spherical,bas_set_upcase
       data opts /
      &    'spherical', 'cartesian', 'segment', 'nosegment', 'library',
      &    'file',      'print',     'noprint', 'ecpset',    'soset',
-     &    'version', 'rel','bse'/
+     &    'version', 'rel','bse', 'uppercase'/
 c
       ecpname = '                                                '
       soname = '                                                '
@@ -105,6 +106,7 @@ c
       o_add_soname = .false.  ! Default is to not associate a so name
       oIs_rel = .false.    ! Default is nonrelativistic
       oHas_Star = .false.  ! Default, not using star-tags 
+      oupcase = .false. ! Default is do not upper case ouput
 c
  10   if (inp_a(test)) then
 c
@@ -122,7 +124,7 @@ c
          endif
 c
          goto (100, 200, 300, 400, 500, 600, 700, 800, 900, 1000,
-     &         1100,1200,1300) ind
+     &         1100,1200,1300,1400) ind
          goto 10000
 c
 c     spherical
@@ -213,6 +215,13 @@ c
          mydir='libraries.bse'
          goto 10
 c
+c
+c uppercase bs_tags
+c
+01400    continue
+         oupcase=.true.
+         goto 10
+c
       endif
 c
 c initialize the default library name based on rules in bas_library_file
@@ -269,6 +278,9 @@ c
      &    ('bas_input: failed to init add_ucnt ',911,
      &       BASIS_ERR)
       if (.not. bas_set_spherical(basis, ospherical))
+     &      call errquit
+     &      (' bas_set_spherical failed ',911, BASIS_ERR)
+      if (.not. bas_set_upcase(basis, oupcase))
      &      call errquit
      &      (' bas_set_spherical failed ',911, BASIS_ERR)
       

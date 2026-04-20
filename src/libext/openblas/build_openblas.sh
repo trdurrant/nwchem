@@ -1,23 +1,9 @@
 #!/usr/bin/env bash
 #set -v
 arch=`uname -m`
+source ../libext_utils/getfiles_utils.sh
 VERSION=0.3.29
-#COMMIT=974acb39ff86121a5a94be4853f58bd728b56b81
-BRANCH=develop
-if [ -f  OpenBLAS-${VERSION}.tar.gz ]; then
-    echo "using existing"  OpenBLAS-${VERSION}.tar.gz
-else
-    rm -rf OpenBLAS*
-    tries=1 ; until [ "$tries" -ge 6 ] ; do
-		  if [ "$tries" -gt 1 ]; then sleep 9; echo attempt no.  $tries ; fi
-		  curl -L https://github.com/xianyi/OpenBLAS/archive/v${VERSION}.tar.gz -o OpenBLAS-${VERSION}.tar.gz ;
-		  # check tar.gz integrity
-		  gzip -t OpenBLAS-${VERSION}.tar.gz >&  /dev/null
-		  if [ $? -eq 0 ]; then break ;  fi
-		  tries=$((tries+1)) ;  done
-fi
-gzip -t OpenBLAS-${VERSION}.tar.gz >&  /dev/null
-if [ $? -ne 0 ]; then echo  "openBLAS tarball not ready"; rm -f OpenBLAS-${VERSION}.tar.gz; exit 1 ; fi
+get_openblas $VERSION
 tar xzf OpenBLAS-${VERSION}.tar.gz
 ln -sf OpenBLAS-${VERSION} OpenBLAS
 cd OpenBLAS
@@ -98,7 +84,8 @@ else
     if [[ -n "${USE_DYNAMIC_ARCH}" ]] || [[ "${USE_HWOPT}" == "n" ]]; then
 	if [[ "$arch" == "x86_64" ]]; then
 	    echo   "not cross compiling, therefore using DYNAMIC_ARCH "
-	    FORCETARGET+="DYNAMIC_ARCH=1 DYNAMIC_OLDER=1"
+	    FORCETARGET+="DYNAMIC_ARCH=1"
+#	    FORCETARGET+="DYNAMIC_ARCH=1 DYNAMIC_OLDER=1"
 	fi
     fi
 fi
@@ -249,7 +236,7 @@ if [[  ! -z "${USE_OPENMP}" ]]; then
 fi
 GOTFREEBSD=$(uname -o 2>&1|awk ' /FreeBSD/ {print "1";exit}')
 MYMAKE=make
-MAKEJ="MAKE_NB_JOBS=2"
+MAKEJ="MAKE_NB_JOBS=4"
 MAKE_MAJOR=$(make --version 2>& 1|head -1| cut -d " " -f 3 |cut -d .  -f 1)
 MAKE_MINOR=$(make --version 2>& 1|head -1| cut -d " " -f 3 |cut -d .  -f 2)
 if [[ ${MAKE_MAJOR} -ge 4 ]] && [[ ${MAKE_MINOR} -ge 4 ]]; then

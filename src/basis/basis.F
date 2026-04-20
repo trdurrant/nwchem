@@ -330,6 +330,7 @@ c
       bas_spherical(basis)    = .false.
       bas_any_gc(basis)       = .false.
       bas_any_sp_shell(basis) = .false.
+      bas_upcase              = .false.
 c
       h_tmp = exndcf(H_exndcf,basis)
       if (h_tmp .ne. -1) then
@@ -549,6 +550,8 @@ c::-local
           endif
         enddo
         dum_tag = bs_tags(i_tag,basis)
+        if (bas_upcase(basis)) call inp_ucase(dum_tag)
+        
         tmp1 = inp_strlen(bs_stdname(i_tag,basis))
         if (tmp1 .lt. (30-1)) then
           tmp2 = (30-tmp1)/2
@@ -663,6 +666,7 @@ c:: local
 *. . . . . . . . . . . ! Room for tag+space+(+element+) = 16+1+1+16+1
       character*35 buffer  
       character*12 polynomial
+      character*16 case_tag
 c
 #include "bas_exndcf.fh"
 #include "ecpso_sfnP.fh"
@@ -723,8 +727,11 @@ c
      $        atn)) then
             len_tag = inp_strlen(bs_tags(i,basis))
             len_ele = inp_strlen(element)
+            case_tag=bs_tags(i,basis)
+            if (bas_upcase(basis)) call inp_ucase(case_tag)
+
             write(buffer,'(a,'' ('',a,'')'')')
-     $           bs_tags(i,basis)(1:len_tag), element(1:len_ele)
+     $           case_tag(1:len_tag), element(1:len_ele)
          else
             buffer = bs_tags(i,basis)
          endif

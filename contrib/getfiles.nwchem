@@ -1,20 +1,26 @@
 #!/usr/bin/env bash
 #
 # $Id$
+source $NWCHEM_TOP/src/libext/libext_utils/getfiles_utils.sh
 cd $NWCHEM_TOP/src/nwpw/nwpwlib/nwpwxc/
 rm -f dftd3.tgz
 wget https://www.chemie.uni-bonn.de/grimme/de/software/dft-d3/dftd3.tgz
+#openblas
 cd $NWCHEM_TOP/src/libext/openblas
-VERSION=0.3.29
-rm -rf OpenBLAS*gz
-curl -L https://github.com/xianyi/OpenBLAS/archive/v${VERSION}.tar.gz -o OpenBLAS-${VERSION}.tar.gz
+rm -rf OpenB* openblas*
+get_openblas
+#scalapack
 cd $NWCHEM_TOP/src/libext/scalapack
-COMMIT=a23c2cdc6586c427686f6097ae66bb54ef693571
-rm -f scalapack-$COMMIT.zip
-curl -L https://github.com/Reference-ScaLAPACK/scalapack/archive/$COMMIT.zip -o scalapack-$COMMIT.zip
+rm -rf scalapa*
+get_scalapack
+#ELPA
+cd $NWCHEM_TOP/src/libext/elpa
+rm -rf elpa*
+get_elpa 
 #caching
 if [ ! -z "$1" ]; then
     rsync -av $NWCHEM_TOP/src/nwpw/nwpwlib/nwpwxc/dftd3.tgz "$1"/.
     rsync -av $NWCHEM_TOP/src/libext/openblas/OpenBLAS*gz "$1"/.
-    rsync -av $NWCHEM_TOP/src/libext/scalapack/scalapack*zip "$1"/.
+    rsync -av $NWCHEM_TOP/src/libext/scalapack/scalapack*tar*gz "$1"/.
+    rsync -av $NWCHEM_TOP/src/libext/elpa/elpa*tar.gz "$1"/.
 fi

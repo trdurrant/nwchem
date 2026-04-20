@@ -35,7 +35,7 @@ jobs:
           key: ${{ matrix.folder}}-${{ matrix.fc}}/${{ matrix.archs}}-nwchem-dockeractions-v002
       - name: Qemu
         id: qemu
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@v4
         with:
           image: tonistiigi/binfmt:qemu-v8.1.5
       - name: Available platforms
@@ -43,7 +43,7 @@ jobs:
           echo ${{ steps.qemu.outputs.platforms }}
           docker images
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
         with:
           driver-opts: |
               image=moby/buildkit:v0.18.2
@@ -62,7 +62,7 @@ jobs:
         run: |
           echo "cache_hit=N" >> $GITHUB_ENV
       - name: build_schedule
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           push: false
           context: ${{ matrix.folder }}
