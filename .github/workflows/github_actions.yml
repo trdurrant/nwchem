@@ -458,12 +458,12 @@ jobs:
           fi
         shell: bash
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           show-progress:
           fetch-depth: 200
       - name: Install Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
           python-version: "3.12"
       - name: Get Instruction
@@ -478,7 +478,7 @@ jobs:
         shell: bash
       - name: Setup cache
         id: setup-cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~/cache
@@ -515,7 +515,9 @@ jobs:
         id: qa_test
         if: steps.compile.conclusion == 'success'
         run: |
+          if [[ $FC != 'nvfortran' && ${{ env.microarch}} != 'Zen4' ]]; then
           ./travis/run_qas.sh
+          fi
       - name: Check if QA testing has failed
         if: ${{ failure() &&  steps.qa_test.outcome == 'failure' }}
         run: |

@@ -9,7 +9,7 @@ check_tgz() {
     echo $myexit
 }
 if [ $# -eq 0 ];  then
-    VERSION=7.0.0
+    VERSION=7.1.2
 else
     VERSION=$1
 fi
@@ -94,8 +94,8 @@ if ((CMAKE_VER_MAJ < ${CMAKE_VER_REQ_MAJ})) || (((CMAKE_VER_MAJ == ${CMAKE_VER_R
 fi
 
 cd libxc
-ls -lrt ../mylibxc_cmake.patch
-patch -p1  < ../mylibxc_cmake.patch
+#ls -lrt ../mylibxc_cmake.patch
+#patch -p1  < ../mylibxc_cmake.patch
 # patch pk09 to avoid compiler  memory problems
 #patch -p0 -N < ../pk09.patch
 mkdir -p build
@@ -124,9 +124,13 @@ if [[ "${USE_HWOPT}" == "n" ]]; then
 else
     enable_xhost_flag=ON
 fi
-
+python3 -m venv vpytest
+source vpytest/bin/activate
+python -m pip install --upgrade pip pytest
+python -m pip list
 $CMAKE -E env CFLAGS="$cflags" LDFLAGS="$ldflags" FCFLAGS="$fcflags" FFLAGS="$fcflags" \
 $CMAKE  -DCMAKE_INSTALL_PREFIX=${NWCHEM_TOP}/src/libext/libxc/install -DCMAKE_C_COMPILER=$CC -DENABLE_FORTRAN=ON -DCMAKE_Fortran_COMPILER=$FC -DDISABLE_KXC=OFF \
+-DBUILD_TESTING=ON -DBUILD_SHARED_LIBS=OFF \
 -DENABLE_XHOST="$enable_xhost_flag" \
 -DENABLE_FORTRAN03=ON \
 -DCMAKE_INSTALL_LIBDIR="lib" -DCMAKE_BUILD_TYPE=Release ..
@@ -139,4 +143,5 @@ if [[ $(uname -s) == "Linux" ]]; then
 fi
 ln -sf  ../../install/lib/libxc.a ../../install/lib/libnwc_xc.a
 ln -sf  ../../install/lib/libxcf03.a ../../install/lib/libnwc_xcf03.a
+deactivate
 
