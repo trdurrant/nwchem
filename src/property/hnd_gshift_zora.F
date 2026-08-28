@@ -13,7 +13,8 @@ c Modified from hnd_giaox by F. Aquino 11-17-10
 #include "prop.fh"
 #include "bgj.fh"
 #include "case.fh"
-#include "zora.fh" 
+#include "zora.fh"
+#include "util_maxlength.fh"
       integer rtdb    ! [input] rtdb handle
       integer basis   ! [input] basis handle
       integer geom    ! [input] geometry handle
@@ -42,7 +43,7 @@ c Modified from hnd_giaox by F. Aquino 11-17-10
       double precision val_oo,val_ov
 
       double precision jfac(12),kfac(12),a(6),axs(3,3),eig(3),xfac
-      character*255 zorafilename
+      character*MAXLENGTH zorafilename
       integer type_nmrdata,g_AtNr1,icalczora,icalczora_AB
       integer ga_dia_epr,ga_para1_epr,ga_Fji,ga_h01_epr
       integer ga_dia_epr_AB,ga_para1_epr_AB ! for A,B tensor contrib.
@@ -2217,6 +2218,7 @@ c                                  = P^(1,0)_A -  P^(1,0)_B
 #include "rtdb.fh"
 #include "bas.fh"
 #include "stdio.fh"
+#include "util_maxlength.fh"
       integer npol   ! nr. of polarizations
       integer g_p1   ! OUT: Perturbed density matrix
       integer g_rhs  ! IN : accumulated right-hand-side expression
@@ -2243,9 +2245,8 @@ c ------ for Hyperfine NMLO analysis --------- START
      &        g_munuFCSD,g_munuPSOSO,g_sdens  ! dummy variables not used 
       logical dft_zoraHYP_NLMOAnalysis_write
       character lbl_nlmohyp*(*)
-      character*255 zorafilename
-      external dft_zoraHYP_NLMOAnalysis_write,
-     &         util_file_name
+      character*MAXLENGTH zorafilename
+      external dft_zoraHYP_NLMOAnalysis_write
 c ------ for Hyperfine NMLO analysis --------- END          
       integer debug_p10
 
@@ -2640,7 +2641,7 @@ c                                  = P^(1,0)_A -  P^(1,0)_B
 #include "rtdb.fh"
 #include "bas.fh"
 #include "stdio.fh"
-      
+#include "util_maxlength.fh"      
       integer g_p1 ! for debugging
 
       integer npol   ! nr. of polarizations
@@ -2674,7 +2675,7 @@ c ------ for g-shift NLMO analysis --------- START
      &        g_sdens                     ! dummy variables not used here
       logical dft_zoraGshift_NLMOAnalysis_write
       character lbl_nlmogshift*(*)
-      character*255 zorafilename
+      character*MAXLENGTH zorafilename
       external dft_zoraGshift_NLMOAnalysis_write,
      &         util_file_name
 c ------ for g-shift NLMO analysis --------- END    
@@ -3626,7 +3627,7 @@ c                                  = P^(1,0)_A -  P^(1,0)_B
 #include "rtdb.fh"
 #include "bas.fh"
 #include "stdio.fh"
-      
+#include "util_maxlength.fh"      
       integer g_p1 ! for debugging
 
       integer npol   ! nr. of polarizations
@@ -3666,7 +3667,7 @@ c ------ for g-shift NMLO analysis --------- START
      &        g_sdens                     ! dummy variables not used here
       logical dft_zoraGshift_NLMOAnalysis_write
       character lbl_nlmogshift*(*)
-      character*255 zorafilename
+      character*MAXLENGTH zorafilename
       external dft_zoraGshift_NLMOAnalysis_write,
      &         util_file_name
 c ------ for g-shift NMLO analysis --------- END   
@@ -5020,6 +5021,7 @@ c ----- out: g_rhs_1e ------- END
 #include "prop.fh"
 #include "bgj.fh"
 #include "case.fh"
+#include "util_maxlength.fh"      
       integer rtdb    ! [input] rtdb handle
       integer basis   ! [input] basis handle
       integer geom    ! [input] geometry handle
@@ -5049,7 +5051,7 @@ c ----- out: g_rhs_1e ------- END
       double precision atn, tol2e, val, isotr, aniso
       double precision val_oo,val_ov
       double precision a(6),axs(3,3),eig(3),xfac
-      character*255 zorafilename
+      character*MAXLENGTH zorafilename
       integer type_nmrdata,g_AtNr1,icalczora
       integer ga_dia_epr_AB,ga_para1_epr_AB,ga_Fji,ga_h01_epr
       integer g_CiFull(2)
@@ -5910,6 +5912,7 @@ c -------------- for g-shift NMLO analysis ----------------- START
 #include "cosmo.fh"
 #include "msgids.fh" 
 #include "zora.fh"   
+#include "util_maxlength.fh"      
 c FA: Revised on 06-22-11
 c ------Main outputs -------- START
       integer g_munu_rot,         ! hyp-FCSD  dia  part
@@ -5939,7 +5942,7 @@ c                =3  xx yy zz
       integer iind(2),jind(2),icalczora,type_NMR  
       integer alo(3),ahi(3),elo(3),ehi(3),flo(3),fhi(3)
       logical dft_zoraGshift_NLMOAnalysis_read ! for read-nlmo-mat
-      character*255 zorafilename              ! for read-nlmo-mat
+      character*MAXLENGTH zorafilename              ! for read-nlmo-mat
       integer arr_ind(6,2)
        data ((arr_ind(j,i),i=1,2),j=1,6)
      &  /1,1,2,2,3,3,1,2,1,3,2,3/

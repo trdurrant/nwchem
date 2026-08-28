@@ -20,6 +20,7 @@ c     It is duplicated here to address some build issues
 c
 cold      integer numfunc
 cold      parameter(numfunc=65)
+#include "util_maxlength.fh"
 #include "xc.fh"
 cc AJL/Begin/FDE
       integer numfunc_fde
@@ -77,7 +78,7 @@ cc AJL/Begin/FDE
      &     nshells_fde
 cc AJL/End
 c
-      character*256 movecs_in, movecs_out
+      character*MAXLENGTH movecs_in, movecs_out
       character*8 movecs_guess
       common /cdft/
 c

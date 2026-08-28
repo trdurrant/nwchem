@@ -2,18 +2,28 @@
 UNAME_S=$(uname -s)
 arch=`uname -m`
 if [[ ${UNAME_S} == Linux ]]; then
-    CPU_FLAGS=$(lscpu | grep -i flags | sort | uniq)
+    if [ -f ./cpuinfo/build/isa-info ]; then
+	CPU_FLAGS=$(./cpuinfo/build/isa-info |grep yes)
+    else
+	CPU_FLAGS=$(lscpu | grep -i flags | sort | uniq)
+    fi
 elif [[ ${UNAME_S} == Darwin ]]; then
     CPU_FLAGS=$(/usr/sbin/sysctl -n machdep.cpu.features)
     if [[ "$arch" == "x86_64" ]]; then
 	CPU_FLAGS_2=$(/usr/sbin/sysctl -n machdep.cpu.leaf7_features)
     fi
 fi
-if [[ $(echo ${CPU_FLAGS}   | tr  'A-Z' 'a-z'| awk ' /clzero/{print "Y"}') == "Y" ]]; then
-    echo "zen"
+if [[ $(echo ${CPU_FLAGS}   | tr  'A-Z' 'a-z'| awk ' /avx10_2/{print "Y"}') == "Y" ]]; then
+    echo "avx10.2"
+    exit 0
+elif [[ $(echo ${CPU_FLAGS}   | tr  'A-Z' 'a-z'| awk ' /avx10_1/{print "Y"}') == "Y" ]]; then
+    echo "avx10.1"
     exit 0
 elif [[ $(echo ${CPU_FLAGS}   | tr  'A-Z' 'a-z'| awk ' /avx512f/{print "Y"}') == "Y" ]]; then
     echo "avx512"
+    exit 0
+elif [[ $(echo ${CPU_FLAGS}   | tr  'A-Z' 'a-z'| awk ' /clzero/{print "Y"}') == "Y" ]]; then
+    echo "zen"
     exit 0
 elif [[ $(echo ${CPU_FLAGS} | tr  'A-Z' 'a-z'| awk ' /avx2/   {print "Y"}') == "Y" ]]; then
     echo "avx2"
@@ -25,7 +35,10 @@ elif [[ $(echo ${CPU_FLAGS}   | tr  'A-Z' 'a-z'| awk ' /sse2/   {print "Y"}') ==
     echo "sse2"
     exit 0
 elif [[ $arch == "arm64" || $arch == "aarch64" ]]; then
-    if [[ $(echo ${CPU_FLAGS}   | tr  'A-Z' 'a-z'| awk ' /sve2/   {print "Y"}') == "Y" ]]; then
+    if [[ $(echo ${CPU_FLAGS}   | tr  'A-Z' 'a-z'| awk ' /sve 2/   {print "Y"}') == "Y" ]]; then
+	echo "sve2"
+	exit 0
+    elif [[ $(echo ${CPU_FLAGS}   | tr  'A-Z' 'a-z'| awk ' /sve2/   {print "Y"}') == "Y" ]]; then
 	echo "sve2"
 	exit 0
     elif [[ $(echo ${CPU_FLAGS}   | tr  'A-Z' 'a-z'| awk ' /sve/   {print "Y"}') == "Y" ]]; then

@@ -137,6 +137,8 @@ c         Check whether the length and text of the key on the card and
 c         the requested key match. If so, we have found the key and
 c         extract to corresponding value.
 c
+c skip blank lines: istart=0
+          if(istart.ne.0)  then
           if (lencrd.eq.lenkey.and.
      +        card(istart:lencrd+istart).eq.key(1:lenkey)) then
             indexv=lencrd+istart+1
@@ -147,7 +149,8 @@ c
             lencrd=inp_strlen(rightcard(istart:lencrd+istart-1))-1
             value=rightcard(istart:lencrd+istart)
             found=.true.
-          endif
+         endif
+         endif
         enddo ! while(.not.found)
  999    close(unit=69)
         goto 9996

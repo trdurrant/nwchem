@@ -37,7 +37,7 @@
       integer me
       double precision util_scratch_dir_avail_for_me
       character*80 errmsg
-      character*256 grinfo_in
+      character*(nw_max_path_len) grinfo_in
       external util_scratch_dir_avail_for_me
       logical grid_file_rewind,grid_file_close
       logical oreafail
@@ -687,7 +687,7 @@ c
       external grid_file_open
       integer avail, localmemsize
       integer filesize, memsize,eaf_size_in_dbl
-      character*255 gridfilename
+      character*(nw_max_path_len) gridfilename
       double precision nq
       logical ofirst
       data ofirst /.true./      ! If first call to this routine
@@ -934,6 +934,7 @@ c
 #include "errquit.fh"
 #include "geom.fh"
 #include "cgridfile.fh"
+#include "util.fh"
 c
       integer geom ![in]
 c
@@ -941,7 +942,7 @@ c
       integer filesize, memsize,eaf_size_in_dbl
       logical grid_file_open
       external grid_file_open
-      character*255 gridfilename
+      character*(nw_max_path_len) gridfilename
       if(.not.geom_nuc_rep_energy(geom, Enuc)) 
      .     call errquit(' gridquad: enucrep failed ',0, GEOM_ERR)
       grid_reopen=.false.

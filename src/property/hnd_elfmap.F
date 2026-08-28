@@ -26,7 +26,7 @@ c
       integer l_tefldm, k_tefldm
       integer nefc, l_efcc, k_efcc, l_efcz, k_efcz
       integer g_dens(3),ndens,nclosed(2),nopen(2),nvirt(2)
-      character*3 scftyp
+      character*20 scftyp
       double precision xp, yp, zp, xn, yn, zn, zan
       double precision elf(3), elfld
       double precision rr, rr3

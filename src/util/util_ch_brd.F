@@ -7,13 +7,14 @@
 #include "inp.fh"
 #include "global.fh"
 #include "mafdecls.fh"
+#include "util_maxlength.fh"
       integer type
       character*(*) string
       integer origin
 c
       integer mitob1
       integer maxs, ls, i
-      parameter (maxs = 256)
+      parameter (maxs = MAXLENGTH)
       integer c(maxs)
 c
       mitob1=MA_sizeof(MT_INT,1,MT_BYTE)

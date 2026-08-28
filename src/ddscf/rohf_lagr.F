@@ -7,13 +7,14 @@ C$Id$
       implicit none
 #include "errquit.fh"
 #include "mafdecls.fh"
-#include "tcgmsg.fh"
+C#include "tcgmsg.fh"
 #include "global.fh"
 #include "cscf.fh"
 #include "crohf.fh"
+#include "util_maxlength.fh"
 c
       integer g_lagr
-      character*255 lagr_out
+      character*MAXLENGTH lagr_out
       integer nset
       integer nocc
       logical movecs_write, file_write_ga
@@ -52,8 +53,9 @@ c
 #include "errquit.fh"
 #include "mafdecls.fh"
 #include "global.fh"
+#include "util_maxlength.fh"
       integer nopen,g_oexch,g_cfock
-      character*255 cfock_out,oexch_out
+      character*MAXLENGTH cfock_out,oexch_out
       logical file_write_ga
       external file_write_ga
 c
@@ -72,8 +74,9 @@ c
 #include "errquit.fh"
 #include "mafdecls.fh"
 #include "global.fh"
+#include "util_maxlength.fh"
       integer nopen,g_oexch,g_cfock
-      character*255 cfock_out,oexch_out
+      character*MAXLENGTH cfock_out,oexch_out
       logical file_read_ga
       external file_read_ga
 c

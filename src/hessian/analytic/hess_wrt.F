@@ -3,8 +3,9 @@
       implicit none
 #include "mafdecls.fh"
 #include "hess_info.fh"
+#include "util_maxlength.fh"
 c
-      character*255 filehess,fileddipole
+      character*MAXLENGTH filehess,fileddipole
       logical dipole_okay
 c
       dipole_okay=.true.
@@ -24,12 +25,13 @@ c
 #include "errquit.fh"
 #include "mafdecls.fh"
 #include "stdio.fh"
+#include "util_maxlength.fh"
 c
       integer nxyz, nvar2, n3xyz
       integer l_exyt, k_exyt, nhesst, iii
       double precision dbl_tmp
       double precision e_xyz(nxyz*3,nxyz*3)
-      character*255 filehess
+      character*MAXLENGTH filehess
 c
 c This routine reads the hessian from disk.  This was essentially 
 c taken from stepper/vib_vib.F.
@@ -76,11 +78,12 @@ c
 #include "mafdecls.fh"
 #include "hess_info.fh"
 #include "stdio.fh"
+#include "util_maxlength.fh"
 c
       integer nxyz, iii
       double precision dbl_tmp
       double precision ddipder(nxyz*9)
-      character*255 fileddipole
+      character*MAXLENGTH fileddipole
       logical dipole_file_exists
 c
 c This routine reads the dipole derivative terms

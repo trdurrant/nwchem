@@ -191,7 +191,7 @@ c
 c     == zora related ==
       logical dft_zora_read, dft_zora_write, dft_zora_inquire_file
       external dft_zora_read, dft_zora_write, dft_zora_inquire_file
-      character*255 zorafilename
+      character*(nw_max_path_len) zorafilename
       integer g_zora_scale_sf(2)
       double precision ener_scal
       integer icalczora
@@ -200,7 +200,7 @@ c
 c     virtual spectrum
       logical lvspec
       integer owstart(2), owend(2)
-      character*255 vspecfilename
+      character*(nw_max_path_len) vspecfilename
 c
 c     timings 
       double precision time1,time2

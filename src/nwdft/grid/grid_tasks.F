@@ -13,6 +13,7 @@ c
 #include "stdio.fh"
 #include "sym.fh"
 #include "geom.fh"
+#include "util_maxlength.fh"
 c
       integer rtdb, qsh, nqlen, npts_per_ang, nq_tot
       integer lrij, irij, lrq, irq, lp, ip, lexpo, iexpo
@@ -25,7 +26,7 @@ c
 c
       logical oreadfile, owritefile
       integer filesize, memsize
-      character*255 gridfilename
+      character*MAXLENGTH gridfilename
 c
       integer iqsh, irsh, ictr, iang, npts_iqsh
       integer nq,nproc,me,

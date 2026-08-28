@@ -2,7 +2,8 @@
 #include <string.h>
 #include "rtdb.h"
 #include "macdecls.h"
-#define MXLGTH 32768
+#include "util_maxlength.fh"
+#define HUGELGTH 32768
 
 #define FORTRAN_TRUE  ((Logical) 1)
 #define FORTRAN_FALSE ((Logical) 0)
@@ -58,7 +59,7 @@ Logical rtdb_parallel_(const Logical *mode)
 Logical rtdb_open_(const char *filename, const char *mode, Integer *handle,
 		   const Integer flen, const Integer mlen)
 {
-  char fbuf[256], mbuf[256];
+  char fbuf[MAXLENGTH], mbuf[MAXLENGTH];
   int hbuf;
 
   if (!fortchar_to_string(filename, flen, fbuf, sizeof(fbuf))) {
@@ -83,7 +84,7 @@ Logical rtdb_open_(const char *filename, const char *mode, Integer *handle,
 
 Logical rtdb_clone_(const Integer *handle, const char *suffix, const int mlen)
 {
-  char mbuf[256];
+  char mbuf[MAXLENGTH];
   int hbuf = (int) *handle;
 
   if (!fortchar_to_string(suffix, mlen, mbuf, sizeof(mbuf))) {
@@ -98,7 +99,7 @@ Logical rtdb_clone_(const Integer *handle, const char *suffix, const int mlen)
 
 Logical rtdb_getfname_(const Integer *handle, char *fname, const int mlen)
 {
-  char mbuf[256];
+  char mbuf[MAXLENGTH];
   int hbuf = (int) *handle;
 
   if (rtdb_getfname(hbuf, mbuf)){
@@ -114,7 +115,7 @@ Logical rtdb_getfname_(const Integer *handle, char *fname, const int mlen)
 
 Logical rtdb_close_(const Integer *handle, const char *mode, const int mlen)
 {
-  char mbuf[256];
+  char mbuf[MAXLENGTH];
   int hbuf = (int) *handle;
 
   if (!fortchar_to_string(mode, mlen, mbuf, sizeof(mbuf))) {
@@ -133,7 +134,7 @@ Logical rtdb_get_info_(const Integer *handle, const char *name,
 {
 
   int hbuf = (int) *handle;
-  char dbuf[26], nbuf[256];
+  char dbuf[26], nbuf[MAXLENGTH];
   int nelbuf, typebuf;
 
   if (!fortchar_to_string(name, nlen, nbuf, sizeof(nbuf))) {
@@ -171,7 +172,7 @@ Logical rtdb_put_(const Integer *handle, const char *name, const Integer *ma_typ
 		  const Integer *nelem, const void *array, const int nlen)
 {
   int hbuf = (int) *handle;
-  char nbuf[256];
+  char nbuf[MAXLENGTH];
   int nelbuf;
   int typebuf;
 
@@ -200,7 +201,7 @@ Logical rtdb_get_(const Integer *handle, const char *name,
 		  void *array, const int nlen)
 {
   int hbuf = (int) *handle;
-  char nbuf[256];
+  char nbuf[MAXLENGTH];
   int nelbuf;
   int typebuf;
 
@@ -229,7 +230,7 @@ Logical rtdb_ma_get_(const Integer *handle, const char *name, Integer *ma_type,
 		     Integer *nelem, Integer *ma_handle, const int nlen)
 {
   int hbuf = (int) *handle;
-  char nbuf[256];
+  char nbuf[MAXLENGTH];
   int nelbuf;
   int typebuf;
   int handbuf;
@@ -291,8 +292,8 @@ Logical rtdb_cput_(const Integer *handle, const char *name,
 */
 
   int hbuf = (int) *handle;
-  char nbuf[256];
-  char abuf[MXLGTH]=" ";
+  char nbuf[MAXLENGTH];
+  char abuf[HUGELGTH]=" ";
   int nelbuf; 
   int typebuf;
   int i, left;
@@ -304,7 +305,7 @@ Logical rtdb_cput_(const Integer *handle, const char *name,
       const char *element = array;
     
     if (!fortchar_to_string(element, alen, next, left)) {
-      (void) fprintf(stderr, "rtdb_cput: abuf is too small, increase MXLGTH to=%d\n", 
+      (void) fprintf(stderr, "rtdb_cput: abuf is too small, increase HUGELGTH to=%d\n", 
 		     (int) (alen + sizeof(abuf) - left));
       return FORTRAN_FALSE;
     }
@@ -366,8 +367,8 @@ Logical rtdb_cget_size_(const Integer *handle, const char *name,
 */
 
   int hbuf = (int) *handle;
-  char nbuf[256];
-  char abuf[MXLGTH];
+  char nbuf[MAXLENGTH];
+  char abuf[HUGELGTH];
   int nelbuf;
   int typebuf;
   int i;
@@ -428,8 +429,8 @@ Logical rtdb_cget_(const Integer *handle, const char *name,
 */
 
   int hbuf = (int) *handle;
-  char nbuf[256];
-  char abuf[MXLGTH];
+  char nbuf[MAXLENGTH];
+  char abuf[HUGELGTH];
   int nelbuf;
   int typebuf;
   int i;
@@ -479,7 +480,7 @@ Logical rtdb_cget_(const Integer *handle, const char *name,
 
 Logical rtdb_first_(const Integer *handle, char *name, int nlen)
 {
-  char nbuf[256];
+  char nbuf[MAXLENGTH];
   
   if (rtdb_first((int) *handle, (int) sizeof(nbuf), nbuf) &&
       string_to_fortchar(name, nlen, nbuf))
@@ -490,7 +491,7 @@ Logical rtdb_first_(const Integer *handle, char *name, int nlen)
 
 Logical rtdb_next_(const Integer *handle, char *name, int nlen)
 {
-  char nbuf[256];
+  char nbuf[MAXLENGTH];
 
   if (rtdb_next((int) *handle, (int) sizeof(nbuf), nbuf) &&
       string_to_fortchar(name, nlen, nbuf)) {
@@ -503,7 +504,7 @@ Logical rtdb_next_(const Integer *handle, char *name, int nlen)
 Logical rtdb_delete_(const Integer *handle, const char *name, const int nlen)
 {
   int hbuf = (int) *handle;
-  char nbuf[256];
+  char nbuf[MAXLENGTH];
 
   if (!fortchar_to_string(name, nlen, nbuf, sizeof(nbuf))) {
     (void) fprintf(stderr, "rtdb_delete: nbuf is too small, need=%d\n", 

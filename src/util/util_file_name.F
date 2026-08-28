@@ -116,7 +116,8 @@ c
       character*(*) name      ! [output] full filename
       integer nodgs           ! [input] no. of digits for prefix
 c
-      character*(nw_max_path_len) dir, tmp
+      character*(nw_max_path_len) dir, tmp1
+      character*(nw_max_path_lenxtra) tmp
       integer ltmp, ldir, me
       logical util_file_parse_dir
       external util_file_parse_dir
@@ -473,7 +474,7 @@ C$Id$
       logical ocontinue          ! [output]
 c
       character*(nw_max_path_len) ecce_file_name
-      character*(nw_max_path_len) a_temporary_file
+      character*1024 a_temporary_file
       logical status, odirective, echo
       logical bad_permanent_dir, bad_scratch_dir
       logical already
@@ -820,7 +821,7 @@ c
       character*8 fstype
       integer l1megabyte,i_k,l_k,nuse_fail,nattpt,
      ,     availmax
-      character*255 dirscr
+      character*(nw_max_path_len) dirscr
       parameter(l1megabyte=2*1000000)
       logical util_file_parse_dir,oprint,io_node,junkhere
       integer ppn
@@ -987,7 +988,8 @@ c
       logical oparallel       ! [input] true=append .nodeid
       character*(*) name      ! [output] full filename
 c
-      character*(nw_max_path_len) dir, tmp
+      character*(nw_max_path_len) dir, tmp1
+      character*(nw_max_path_lenxtra) tmp
       integer ltmp, ldir, me
       logical util_file_parse_dir
       external util_file_parse_dir
@@ -1130,33 +1132,26 @@ c      scratch_dir, parallel
       end
       subroutine util_fsync(fname)
       implicit none
+#include "errquit.fh"
       character*(*),intent(in) :: fname
 c
-      integer iunit
-      integer*4 fd_in,code
-      integer ga_nodeid
-      external ga_nodeid
+      integer*4 code
 c
 #if !defined(CYGNUS) && !defined(WIN32)
       interface
-         function fsync (fd) bind(c,name="fsync")
-         use iso_c_binding, only: c_int
-         integer(c_int), value :: fd
-         integer(c_int) :: fsync
-         end function fsync
+         function c_fsync_by_name(fname)
+     C        bind(c, name="c_fsync_by_name")
+         use iso_c_binding, only: c_char, c_int
+         character(kind=c_char), intent(in) :: fname(*)
+         integer(c_int) :: c_fsync_by_name
+         end function c_fsync_by_name
       end interface
-#endif
-      iunit=10
-      open (iunit,file=fname)
-      call util_flush(iunit)
-#if !defined(CYGNUS) && !defined(WIN32)
-#if defined(GFORTRAN) && !defined(USE_FLANG) && !defined(__llvm__) && !defined(___PGLLVM__)
-      fd_in=fnum(iunit)
-c     Flush and sync
-      code=fsync(fd_in)
+c
+c     append null character to pass the string to C
+c
+      code=c_fsync_by_name(trim(fname) // char(0))
       if(code.ne.0) call
-     c     errquit("Error calling FSYNC",ga_nodeid(),0)
-#endif
+     c     errquit("util_fsync: error",code,UERR)
 #endif
       return
       end

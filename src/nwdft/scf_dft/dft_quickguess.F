@@ -4,6 +4,7 @@
       implicit none
 #include "global.fh"      
 #include "errquit.fh"
+#include "util_maxlength.fh"
       integer ipol
       integer nbf_ao
       logical oskel
@@ -11,7 +12,7 @@
       integer g_dens(*)
       logical densmat ![in]
 c
-      character*256 file_mat1
+      character*MAXLENGTH file_mat1
 c      
       if(densmat) then
          call util_file_name('densmat', .false.,.false.,file_mat1)

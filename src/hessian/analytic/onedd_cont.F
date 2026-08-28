@@ -17,6 +17,7 @@ c
 #include "rtdb.fh"
 #include "stdio.fh"
 #include "util.fh"
+#include "util_maxlength.fh"
 c
       integer rtdb  ! [input] RTDB handle
 c
@@ -29,7 +30,7 @@ c
       logical doS, doT, doV, doECP
       logical oprint, oneprint
 c
-      character*255 tmpname
+      character*MAXLENGTH tmpname
 c
       integer ga_create_atom_blocked
       external ga_create_atom_blocked

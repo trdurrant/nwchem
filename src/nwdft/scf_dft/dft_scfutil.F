@@ -183,7 +183,7 @@ c
       double precision evals(2*nbf_ao) ! [input] Eigenvalues
 c
       integer i,ok
-      character*255 evalfile
+      character*(nw_max_path_len) evalfile
       integer uniteval
 c
       logical util_io_unit

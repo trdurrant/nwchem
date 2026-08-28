@@ -3,7 +3,6 @@ title "water dimer - aperiodic cubic cell"
 
 start water2psp
 
-memory 80 mb
 
 geometry units angstroms center autosym autoz print xyz
 O                   0.00196489    -1.46479200     0.02674379
@@ -86,7 +85,7 @@ PSPW
 END
 
 task pspw steepest_descent
-task cg_pspw energy  
+task pspw energy  
 
 
 

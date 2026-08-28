@@ -17,7 +17,8 @@ c
       integer incomplete        ! Incomplete integral task for semidirect
       integer incmax, incmin    ! Global min/max of incomplete
       logical oerilabel       ! True if using labels with ERI's
-      character*255 int2efilename    ! Stub for integral file name
+#include "util_maxlength.fh"
+      character*MAXLENGTH int2efilename    ! Stub for integral file name
 c
       integer maxquartet        ! Blocking ... max request size
       integer maxpair           ! Blocking ... max pair block size

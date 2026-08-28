@@ -5,10 +5,11 @@
 !     We will see if this Fortran stuff actually works...
 !
 #ifdef NWCHEM_LONG_PATHS
+#include "util_maxlength.fh"
       interface
         subroutine utilc_nwchem_srcdir(string,length) bind(C)
           use, intrinsic                  :: ISO_C_BINDING
-          character (KIND=C_CHAR)         :: string(256)
+          character (KIND=C_CHAR)         :: string(MAXLENGTH)
           integer (C_INT)                 :: length
         end subroutine
       end interface

@@ -14,6 +14,7 @@ C     movecs (and Lagrangian in ROHF case) on disk
 #include "stdio.fh"
 #include "util.fh"
 #include "eaf.fh"
+#include "util_maxlength.fh"
 
       integer ndens,geom, basis, g_dens(ndens), g_wdens, g_eigen_diag,
      $     nbf, nbf2, nopen, nclosed
@@ -21,7 +22,7 @@ C     movecs (and Lagrangian in ROHF case) on disk
       character*(*) scftype
       character*(*) movecs
       double precision offset   ! EAF file offset
-      character*255 pdmfilename ! EAF file name
+      character*MAXLENGTH pdmfilename ! EAF file name
       integer pdmfile           ! EAF file handle
       integer l_buf, k_buf
 
@@ -35,7 +36,7 @@ C     movecs (and Lagrangian in ROHF case) on disk
       logical movecs_read, file_read_ga
       external movecs_read, file_read_ga
 
-      character*255 fname       ! filename for lagrangian (ROHF) 
+      character*MAXLENGTH fname       ! filename for lagrangian (ROHF) 
                                 ! or second-order contributions (MP2)
 
 C     local variables

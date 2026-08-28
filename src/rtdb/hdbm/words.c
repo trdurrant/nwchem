@@ -4,6 +4,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <unistd.h>
 #include <memory.h>
 #include <string.h>
 #include "hdbm.h"

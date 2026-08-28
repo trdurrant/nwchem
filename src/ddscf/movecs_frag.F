@@ -28,7 +28,7 @@ c
       integer i
       integer maxfrag
       parameter (maxfrag = 100)
-      character*256 fragments(maxfrag), key
+      character*(nw_max_path_len) fragments(maxfrag), key
       integer ma_type, nfrag
 c
       logical oprint

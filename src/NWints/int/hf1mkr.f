@@ -88,22 +88,18 @@ c auxiliary functions.
 
        do 120 m = 1,NPP
 
+        PC(m,1) = Pxyz(1,m) - Cxyz(1,ic)
+        PC(m,2) = Pxyz(2,m) - Cxyz(2,ic)
+        PC(m,3) = Pxyz(3,m) - Cxyz(3,ic)
+        ff(1,m) = RS(m)
         alpha_t = alpha(1,m) + alpha(2,m)
         alpha_t = alpha_t/(1.0d0+alpha_t*beta)
-
-        ff(1,m) = RS(m)
         ff(2,m) = -2.D0*alpha_t
-
-        PCx = Pxyz(1,m) - Cxyz(1,ic)
-        PCy = Pxyz(2,m) - Cxyz(2,ic)
-        PCz = Pxyz(3,m) - Cxyz(3,ic)
-
-        R(m,0,1) = alpha_t*(PCx**2 + PCy**2 + PCz**2)
-
-        PC(m,1) = PCx
-        PC(m,2) = PCy
-        PC(m,3) = PCz
-
+        R(m,0,1) = alpha_t*(
+     *       PC(m,1)**2 +
+     *       PC(m,2)**2 +
+     *       PC(m,3)**2) 
+        
   120  continue
 
 c Evaluate the incomplete gamma function.

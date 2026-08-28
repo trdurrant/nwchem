@@ -5070,7 +5070,7 @@ c
 c     Put the data of given name and dimension from a()
 c     into the appropriate file.
 c
-      character*255 filename
+      character*(nw_max_path_len) filename
       logical odebug, oscratch
 c
       oscratch = (name .ne. 'drv.hess' .and. name.ne.'zsym')
@@ -5112,7 +5112,7 @@ c
 c     Get the data of given name and dimension into a()
 c     from the appropriate file.
 c
-      character*255 filename
+      character*(nw_max_path_len) filename
       logical odebug, oscratch
       integer m
 c

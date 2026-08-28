@@ -66,7 +66,8 @@ c
 c     variables for reading movecs
 c
       character*255 title_vecs, basis_vecs
-      character*20 scftype_vecs, kohn_movecs
+      character*20 scftype_vecs
+      character*(nw_max_path_len) kohn_movecs
       integer nbf_vecs, nsets, mbf, noc, nbf_all
 c     integer nmo   ! see cscf.fh 
       logical status, all_bas_han

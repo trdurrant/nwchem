@@ -7,8 +7,6 @@
 #include <stdlib.h>
 #include "hdbm.h"
 
-int random(void);
-int srandom(int);
 
 #define INNER 1000
 

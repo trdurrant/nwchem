@@ -21,7 +21,7 @@ C>
       implicit none
 #ifdef NWCHEM_LONG_PATHS
 #include "utilc_nwchem_srcdir.fh"
-      character (KIND=C_CHAR,LEN=1) :: compiled_name(256)
+      character (KIND=C_CHAR,LEN=1) :: compiled_name(MAXLENGTH)
       integer (C_INT) :: length
       character(len=*), intent(inout) :: pathname
       integer j

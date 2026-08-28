@@ -27,6 +27,8 @@ static unsigned int hash(const void *, int);
 
 #define MAXHDBM 8		/* Max. no. of indep. data-bases */
 #define NBINS 1021		/* No. of bins in the in-core hashtable */
+/* CWE-129 fix: sanity cap on key/value record sizes read from disk */
+#define HDBM_MAX_RECORD_SIZE (1L << 30)   /* 1 GB */
 
 #define HASH(a) (hash(a.dptr, a.dsize) % NBINS)
 				/* Hash function for in-core hashtable */
@@ -300,7 +302,14 @@ static int datum_fread(FILE *file, size_t file_ptr, size_t size, datum *d)
   */
 {
     d->dsize = 0;
-    
+
+    /* CWE-129 fix: reject negative (wrapped) or unreasonably large sizes
+       before they are used for allocation/pointer arithmetic */
+    if ((long) size < 0 || size > HDBM_MAX_RECORD_SIZE) {
+	fprintf(stderr, "datum_fread: invalid/corrupt size %ld\n", (long) size);
+	return 0;
+    }
+
     if (!(d->dptr = hdbm_malloc((size_t) size))) {
 	fprintf(stderr, "datum_fread: failed to malloc %lu\n", size);
 	return 0;
@@ -327,12 +336,18 @@ static int hdbm_load(hdbm db, FILE *file)
     char header[32];
     file_entry fe;
     long rec_ptr;
+    long file_size;
     rewind(file);
     if ((hdbm_fread(header, sizeof(cookie), (size_t) 1, file) != 1) ||
 	(strncmp(header, cookie, strlen(cookie)) != 0)) {
 	(void) fprintf(stderr, "hdbm_load: cookie missing ... not a database\n");
 	return 0;
     }
+    /* Determine file size once, used to sanity-check record sizes */
+    long current_pos = ftell(file);
+    (void) hdbm_fseek(file, 0L, SEEK_END);
+    file_size = ftell(file);
+    fseek(file, current_pos, SEEK_SET); 
 
     /* Now simply keep reading until we hit end of file */
     
@@ -342,6 +357,20 @@ static int hdbm_load(hdbm db, FILE *file)
 
 	datum key, value;
 	entry *e;
+
+	/* CWE-129 fix: validate sizes read from a (possibly corrupt or
+	   malicious) file BEFORE using them for allocation, seeking,
+	   or pointer/offset arithmetic. */
+	if (fe.key_size < 0 || fe.val_size < 0 ||
+	    fe.key_size > file_size || fe.val_size > file_size ||
+	    (rec_ptr + (long) sizeof(fe) + fe.key_size + fe.val_size) > file_size) {
+	    (void) fprintf(stderr,
+		"hdbm_load: corrupt record at offset %ld "
+		"(key_size=%d, val_size=%d) ... aborting load\n",
+		rec_ptr, fe.key_size, fe.val_size);
+	    return 0;
+	}
+
 
 	if (fe.active) {
 	    if (!datum_fread(file, rec_ptr+sizeof(fe), fe.key_size, &key)) {
@@ -877,9 +906,21 @@ int hdbm_read(hdbm db, datum key, datum *value)
     search(hash_tables[db].table, key, &index, &cur, &prev);
     
     if (cur) {
-	if (hash_tables[db].file)
-	    return datum_fread(hash_tables[db].file, 
+	if (hash_tables[db].file) {
+	    /* CWE-129 defense-in-depth: cur->val_ptr / cur->value.dsize */
+	    /* originate from on-disk metadata validated in hdbm_load(). */
+	    /* Re-validate here at point of use as a second checkpoint. */
+	    if (cur->value.dsize < 0 || cur->value.dsize > HDBM_MAX_RECORD_SIZE ||
+		cur->val_ptr < 0) {
+		fprintf(stderr,
+		    "hdbm_read: corrupt entry (val_ptr=%ld, dsize=%d) "
+		    "for db %d ... refusing read\n",
+		    cur->val_ptr, cur->value.dsize, db);
+		return 0;
+	    }
+	    return datum_fread(hash_tables[db].file,
 			       cur->val_ptr, cur->value.dsize, value);
+	}
 	else
 	    return datum_duplicate(cur->value, value);
     }
@@ -1026,7 +1067,11 @@ static unsigned int hash(const void *vdata, int n)
     unsigned int multiplier = 1033;
     unsigned int value = 0;
     const unsigned char *data = vdata;
-    
+
+    if (n < 0)                 /* CWE-129 fix: reject invalid/negative size */
+	return 0;
+
+
     while (n--)
 	value = *data++ + multiplier * value;
     

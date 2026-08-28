@@ -15,7 +15,7 @@
 
 #include "eaf.h"
 #include "ga.h"
-
+#include "util_maxlength.fh"
 int fortchar_to_string(const char *, int, char *, const int);
 
 void util_file_unlink(const char *filename)
@@ -39,7 +39,7 @@ void util_file_unlink(const char *filename)
 
 void util_file_unlink_(const char *input, int lin)
 {
-    char in[255];
+    char in[MAXLENGTH_EXTRA];
     if (!fortchar_to_string(input, lin, in, sizeof(in)))
 	GA_Error("util_file_unlink: fortchar_to_string failed for in",0);
     util_file_unlink(in);

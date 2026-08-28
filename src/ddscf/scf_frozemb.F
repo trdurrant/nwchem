@@ -11,6 +11,7 @@
 #include "msgtypesf.h"
 #include "msgids.fh"
 #include "stdio.fh"
+#include "util_maxlength.fh"
 c
       integer rtdb, geom, basis, nbf_ao, g_frozemb
 c
@@ -32,7 +33,7 @@ c
      &     lchi_ao, ichi_ao,
      &     lfock_froz, ifock_froz 
       integer unitno
-      character*255 filevemb
+      character*MAXLENGTH filevemb
       integer inntsize,ddblsize,ok
 c
 c     preliminaries

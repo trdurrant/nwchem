@@ -23,6 +23,7 @@ c
 #include "xc.fh"
 #include "case.fh"
 #include "inp.fh"
+#include "util_maxlength.fh"
 c
       integer rtdb, mult
       integer dftnoc(2), nbsize
@@ -32,8 +33,8 @@ c
       integer g_eigen_diag
       integer l_evals, k_evals, l_occ, k_occ, k_pdm2, k_coeff
       integer dims(3), chunk(3)
-      character*256 sx_name
-      character*256 fx_name
+      character*MAXLENGTH sx_name
+      character*MAXLENGTH fx_name
       character*255 movecs_in, title_vecs, basis_vecs
       character*20 scftype_vecs
       integer nbf_vecs, nsets, nmos(2), l_max

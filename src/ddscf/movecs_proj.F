@@ -46,8 +46,8 @@ c
       integer old_basis
       integer nbf, i, j, nmo
       double precision temp
-      character*255 old_title,basis_name_from_file,old_basis_name,
-     A     old_filename
+      character*255 old_title,basis_name_from_file,old_basis_name
+      character(nw_max_path_len) old_filename
       character*80 project(2)
       character*20 old_scftype
       character*(*) calling_module

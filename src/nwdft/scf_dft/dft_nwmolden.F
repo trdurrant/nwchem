@@ -16,6 +16,7 @@ c     https://sourceforge.net/p/janpa/wiki/nwchem2molden/
 #include "mafdecls.fh"
 #include "rtdb.fh"
 #include "global.fh"
+#include "util_maxlength.fh"
       integer rtdb
       integer geom 
       integer ipol
@@ -29,7 +30,7 @@ c
       character*20 pname
       integer ispin
       integer bas,io_res
-      character*255 filename
+      character*MAXLENGTH filename
       integer inntsize
       logical nwmolden_movecs,nwmolden_basis,nwmolden_geom
       external nwmolden_movecs,nwmolden_basis,nwmolden_geom

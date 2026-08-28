@@ -155,9 +155,9 @@ c Those are stored in rtdb in dft_inpana.F
          if (.not. rtdb_get(rtdb, 'prop:Nocc_b',mt_int,1,nocc_b))
      $      call errquit('prop_input-EFGZ4-Nocc_b: rtdb_put failed',
      $                   555, RTDB_ERR)
+      lfn = 25
 c ======= reading from rtdb (nocc_a,nocc_b) === END
 c ------ Lines below are not necessary ------ START
-c      lfn = 25
 c      if(ga_nodeid().eq.0) then
 c        call util_file_name('hyp', .false., .false., nbo_fname)
 c        open(lfn,file=nbo_fname,status='unknown')
@@ -292,7 +292,8 @@ c ==== Generate filename per atom here
 c ====================================
         write (fname_shield,1) iat
  1      format('shlddata.',i0)
-        write(*,*) 'Writing filename=',fname_shield
+        write(*,*) 'Writing filename=',fname_shield,
+     W       ' unit number=',lfn
         open (lfn, file=fname_shield, status='unknown')
         write (lfn,
      &   '(a,i10,a,i10,a,i10,/a,i10,a,i10,a,i10,a,i10,/a,l3,a/a)') 

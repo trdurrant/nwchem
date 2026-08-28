@@ -17,6 +17,7 @@ c
 #include "stdio.fh"
 #include "util.fh"
 #include "geom.fh"
+#include "util_maxlength.fh"
 c
       integer rtdb 
       integer ind, index, index1
@@ -33,9 +34,9 @@ c
       integer dims(3), chunk(3)
       integer i, idens
 c
-      character*256 cphf_rhs, cphf_sol
-      character*255 movecs
-      character*255 tmpname
+      character*MAXLENGTH cphf_rhs, cphf_sol
+      character*MAXLENGTH movecs
+      character*MAXLENGTH tmpname
       logical hf_job, oprint, olprint, ocphfprint, ouhf
       double precision tol2e
       double precision pt5, four, zero

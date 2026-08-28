@@ -24,20 +24,8 @@ endif
 
        TEST_LIBS = $(LIBRARY) $(LIBS) 
 
-#define this to use HDBM ... otherwise DB will be used
-#                            DB is broken-ish on 64 bit machines
-        USE_HDBM = 1
-
-ifdef USE_HDBM
      LIB_DEFINES = -DUSE_HDBM
          SUBDIRS = hdbm
-else
-# BEGIN_WIN32_IGNORE
-    LIB_INCLUDES = -I./db
-     LIB_DEFINES = -DUSE_DB
-         SUBDIRS = db
-# END_WIN32_IGNORE
-endif
 
 include ../config/makelib.h
 
@@ -54,7 +42,7 @@ cntx:	cntx.o  $(LIBRARY_PATH)
 	$(FC) $(FFLAGS) $(LDFLAGS) -o $@ $^  $(LIBS)
 
 interact:	interact.o $(LIBRARY_PATH)
-	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ interact.o $(LIBRARY_PATH) -lglobal -ltcgmsg -L/msrc/apps/f771.4/SC1.0 -lF77 -lV77 -lm
+	$(CC) -fsanitize=address -g  $(CFLAGS) $(LDFLAGS) -o $@ interact.o $(LIBRARY_PATH) -lga -larmci -lcomex -L$(NWMPI_LIB) $(NWLIBMPI)$  $(BLASOPT) -lgfortran
 
 test:	test.o $(LIBRARY_PATH)
 	$(FC) $(FFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS) 
@@ -63,9 +51,6 @@ testgr:	testgr.o $(LIBRARY_PATH)
 
 rtdbtest:	rtdbtest.o $(LIBRARY_PATH)
 	$(FC) $(FFLAGS) $(LDFLAGS) -o $@ $^ -lm $(LIBS)
-
-rtdbpartest:	rtdb_par_test.o $(LIBRARY)
-	$(CC) $(CFLAGS) -o $@ rtdb_par_test.o $(TEST_LIBS)
 
 context:	context.o $(LIBRARY)
 	$(CC) $(CFLAGS) -o $@ context.o $(TEST_LIBS)

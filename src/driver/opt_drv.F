@@ -929,10 +929,11 @@ C
 #include "global.fh"
 #include "tcgmsg.fh"
 #include "mafdecls.fh"
+#include "util.fh"
 c
       integer nvar
       logical old_hessian
-      character*255 filename
+      character*MAXLENGTH filename
 c
       integer m
 c

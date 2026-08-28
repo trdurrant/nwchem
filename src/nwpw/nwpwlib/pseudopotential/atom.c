@@ -23,6 +23,23 @@
 #define	True	1
 #define	Max(x,y)	((x>y) ? x : y)
 
+/*
+ * Bounds on the electronic-structure description read from the data file.
+ *
+ * Ncore/Nvalence size every per-state array below, so they have to be sane
+ * before they are used for arithmetic or allocation.  A real atom has on the
+ * order of two dozen (n,l) states; 1024 is far beyond anything physical while
+ * still keeping Ncv*sizeof() well clear of overflow, including after the
+ * Dirac/ZORA path doubles both counts.
+ *
+ * n and l are bounded too: lmax is derived from l and is published through
+ * lmax_Atom(), where the pseudopotential code uses it to size and index its
+ * own arrays, so an absurd l here becomes an out-of-range index there.
+ */
+#define ATOM_MAX_STATES	1024
+#define	ATOM_MAX_N	100
+#define	ATOM_MAX_L	20
+
 
 /* atom structure variables */
 
@@ -68,12 +85,19 @@ void init_Atom (char *filename)
 
   /* set the solver type first */
   fp = fopen (filename, "r+");
+  if (fp == ((FILE *) 0))
+    {
+      fprintf (stderr, "atom.c: cannot open %s\n", filename);
+      exit (99);
+    }
   w = get_word (fp);
   while ((w != NIL) && (strcmp ("<solver>", w) != 0))
     w = get_word (fp);
   if (w != NIL)
     {
       w = get_word (fp);
+      if (w == NIL)                     /* end-of-file right after <solver> */
+        w = "";
       if (strcmp ("schrodinger", w) == 0)
 	Solver_Type = Schrodinger;
       if (strcmp ("pauli", w) == 0)
@@ -86,6 +110,11 @@ void init_Atom (char *filename)
   fclose (fp);
   /* open data file */
   fp = fopen (filename, "r+");
+  if (fp == ((FILE *) 0))
+    {
+      fprintf (stderr, "atom.c: cannot open %s\n", filename);
+      exit (99);
+    }
 
   /* move to <atom> section of data file */
   w = get_word (fp);
@@ -102,12 +131,57 @@ void init_Atom (char *filename)
     }
 
   /* set the name of the atom */
-  fscanf (fp, "%s", atom_name);
+  /*
+   * CWE-787 fix: atom_name is a 10-byte static buffer and the name comes
+   * from the data file; the unbounded "%s" overflowed it for any longer
+   * token.  Cap the conversion at one less than the buffer size.
+   */
+  if (fscanf (fp, "%9s", atom_name) != 1)
+    {
+      fprintf (stderr, "atom.c: cannot read atom name from %s\n", filename);
+      fclose (fp);
+      exit (99);
+    }
 
   /* read in atom info. from the stream */
-  fscanf (fp, "%le", &Zion);
-  fscanf (fp, "%le", &amass);
-  fscanf (fp, "%d %d", &Ncore, &Nvalence);
+  if (fscanf (fp, "%le", &Zion) != 1 ||
+      fscanf (fp, "%le", &amass) != 1)
+    {
+      fprintf (stderr, "atom.c: cannot read Zion/amass from %s\n", filename);
+      fclose (fp);
+      exit (99);
+    }
+
+  /*
+   * CWE-129 fix: Ncore and Nvalence come straight from the data file and go
+   * on to size n[], l[], s2[], fill[], turning_point[], peak[], eigenvalue[],
+   * r_psi[] and r_psi_prime[], and to bound every loop that fills them.
+   * Unvalidated they allow:
+   *   - a negative Ncv, so (Ncv+1)*sizeof() converts to an enormous size_t,
+   *     malloc returns NULL, and the pointers are used unchecked;
+   *   - Ncv near INT_MAX, so the (Ncv+1) and 2*Ncore expressions overflow
+   *     signed int, which is undefined and desynchronises the allocation
+   *     size from the loop bound that is supposed to match it;
+   *   - a silently unmodified pair when the fscanf fails, since its return
+   *     value was discarded.
+   */
+  if (fscanf (fp, "%d %d", &Ncore, &Nvalence) != 2)
+    {
+      fprintf (stderr, "atom.c: cannot read Ncore/Nvalence from %s\n",
+	       filename);
+      fclose (fp);
+      exit (99);
+    }
+  if (Ncore < 0 || Nvalence < 0 ||
+      Ncore > ATOM_MAX_STATES || Nvalence > ATOM_MAX_STATES ||
+      (Ncore + Nvalence) < 1 || (Ncore + Nvalence) > ATOM_MAX_STATES)
+    {
+      fprintf (stderr,
+	       "atom.c: Ncore=%d Nvalence=%d out of range [0,%d] in %s\n",
+	       Ncore, Nvalence, ATOM_MAX_STATES, filename);
+      fclose (fp);
+      exit (99);
+    }
 
   if (Solver_Type != Dirac && Solver_Type!=ZORA)
     {
@@ -123,11 +197,40 @@ void init_Atom (char *filename)
       turning_point = (int *) malloc ((Ncv + 1) * sizeof (int));
       peak = (double *) malloc ((Ncv + 1) * sizeof (double));
 
+      if (!n || !l || !s2 || !fill || !turning_point || !peak)
+	{
+	  fprintf (stderr, "atom.c: out of memory for %d states\n", Ncv);
+	  fclose (fp);
+	  exit (99);
+	}
+
       /* set eigenvalue arrays */
       lmax = 0;
       for (i = 0; i < Ncv; ++i)
 	{
-	  fscanf(fp, "%d %d %le", &n[i], &l[i], &fill[i]);
+	  /*
+	   * CWE-129 fix: the return value was discarded, so a short or
+	   * malformed file left these entries as whatever malloc handed
+	   * back -- later read as quantum numbers, used as a divisor in
+	   * eigenvalue_Atom's n[i]*n[i], and folded into lmax.
+	   */
+	  if (fscanf(fp, "%d %d %le", &n[i], &l[i], &fill[i]) != 3)
+	    {
+	      fprintf (stderr,
+		       "atom.c: missing state %d of %d in %s\n",
+		       i + 1, Ncv, filename);
+	      fclose (fp);
+	      exit (99);
+	    }
+	  if (n[i] < 1 || n[i] > ATOM_MAX_N ||
+	      l[i] < 0 || l[i] > ATOM_MAX_L)
+	    {
+	      fprintf (stderr,
+		       "atom.c: state %d has n=%d l=%d out of range in %s\n",
+		       i + 1, n[i], l[i], filename);
+	      fclose (fp);
+	      exit (99);
+	    }
 	  if (l[i] > lmax)
 	    lmax = l[i];
 	}
@@ -142,6 +245,12 @@ void init_Atom (char *filename)
       eigenvalue = (double *) malloc ((Ncv + 1) * sizeof (double));
       r_psi = (double **) malloc ((Ncv + 1) * sizeof (double *));
       r_psi_prime = (double **) malloc ((Ncv + 1) * sizeof (double *));
+      if (!eigenvalue || !r_psi || !r_psi_prime)
+	{
+	  fprintf (stderr, "atom.c: out of memory for %d states\n", Ncv);
+	  fclose (fp);
+	  exit (99);
+	}
       for (i = 0; i < (Ncv + 1); ++i)
 	{
 	  r_psi[i] = alloc_LogGrid();
@@ -165,12 +274,35 @@ void init_Atom (char *filename)
       turning_point = (int *) malloc((Ncv + 2) * sizeof (int));
       peak = (double *) malloc((Ncv + 2) * sizeof (double));
 
+      if (!n || !l || !s2 || !fill || !turning_point || !peak)
+	{
+	  fprintf (stderr, "atom.c: out of memory for %d states\n", Ncv);
+	  fclose (fp);
+	  exit (99);
+	}
+
       /* set eigenvalue arrays */
       lmax = 0;
       ncvh = Ncv / 2;
       for (i = 0; i < ncvh; ++i)
 	{
-	  fscanf (fp, "%d %d %le", &nx, &lx, &fillx);
+	  /* CWE-129 fix: see the non-relativistic branch above. */
+	  if (fscanf (fp, "%d %d %le", &nx, &lx, &fillx) != 3)
+	    {
+	      fprintf (stderr,
+		       "atom.c: missing state %d of %d in %s\n",
+		       i + 1, ncvh, filename);
+	      fclose (fp);
+	      exit (99);
+	    }
+	  if (nx < 1 || nx > ATOM_MAX_N || lx < 0 || lx > ATOM_MAX_L)
+	    {
+	      fprintf (stderr,
+		       "atom.c: state %d has n=%d l=%d out of range in %s\n",
+		       i + 1, nx, lx, filename);
+	      fclose (fp);
+	      exit (99);
+	    }
           lmax=(lmax>lx)?lmax:lx;
 	  n[2 * i] = nx;
 	  n[2 * i + 1] = nx;
@@ -205,6 +337,12 @@ void init_Atom (char *filename)
       eigenvalue = (double *) malloc((Ncv + 2) * sizeof (double));
       r_psi = (double **) malloc((Ncv + 2) * sizeof (double *));
       r_psi_prime = (double **) malloc((Ncv + 2) * sizeof (double *));
+      if (!eigenvalue || !r_psi || !r_psi_prime)
+	{
+	  fprintf (stderr, "atom.c: out of memory for %d states\n", Ncv);
+	  fclose (fp);
+	  exit (99);
+	}
       for (i = 0; i < (Ncv + 2); ++i)
 	{
 	  r_psi[i] = alloc_LogGrid();

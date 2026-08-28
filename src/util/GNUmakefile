@@ -244,6 +244,7 @@ endif
               util_strips.o util_poltensor.o  util_mygop.o util_isnan.o \
               util_blasthreads.o util_gpu_affinity.o util_scalapack.o \
               util_norm2.o util_dpofa.o util_dgedi.o util_checkmpirun.o\
+              utilc_fsync.o  \
               $(EXTRA_OBJ)
 ifndef USE_MLIB
               OBJ_OPTIMIZE += icopy.o dsum.o dgefa.o zsum.o

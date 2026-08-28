@@ -5,7 +5,8 @@ c
 c     Internal common for grid routines
 c     
 c     want to dynamically allocate most of this soon
-c     
+c
+#include "util_maxlength.fh"
       double precision values   ! Buffer for grid_pt values
       double precision cur_rec_rad       ! Max Radius of current record
       double precision buf      ! Compressed buffer for IO only
@@ -22,8 +23,8 @@ c
       integer n_per_rec         ! No. of grid_pts a buffer can hold
       integer rec_len_in_dbl    ! Size of total record in doubles
       integer eaftype ! hack
-      character*256 actualname  ! Name of file
-      character*256 grinfo  ! Name of info file
+      character*MAXLENGTH actualname  ! Name of file
+      character*MAXLENGTH grinfo  ! Name of info file
       logical otrace            ! True if debugging enabled
       logical oinfo             ! True if to print brief info
       integer l_cache, k_cache  ! MA space for grid_pt cache

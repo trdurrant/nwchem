@@ -17,6 +17,7 @@ c
 #include "case.fh"
 #include "inp.fh"
 #include "zora.fh"
+#include "util_maxlength.fh"      
 c
       integer rtdb    ! [input] rtdb handle
       integer basis   ! [input] basis handle
@@ -48,7 +49,7 @@ c
       double precision val_oo,val_ov
       double precision a(6),axs(3,3),eig(3),xfac
       double precision jfac(12),kfac(12)
-      character*255 zorafilename
+      character*MAXLENGTH zorafilename
       character*3 scftyp
       character*16 tag
       character*32 element
@@ -2027,6 +2028,7 @@ c
 #include "cosmo.fh"
 #include "msgids.fh" 
 #include "zora.fh"
+#include "util_maxlength.fh"      
 c
 c FA: Revised on 06-22-11
 c ------Main outputs -------- START
@@ -2058,7 +2060,7 @@ c                =3  xx yy zz
       integer iind(2),jind(2),icalczora,type_NMR,iat
       integer alo(3),ahi(3),elo(3),ehi(3),flo(3),fhi(3)
       logical dft_zoraShield_NLMOAnalysis_read ! for read-nlmo-mat
-      character*255 zorafilename              ! for read-nlmo-mat
+      character*MAXLENGTH zorafilename              ! for read-nlmo-mat
       integer arr_ind(6,2)
        data ((arr_ind(j,i),i=1,2),j=1,6)
      &  /1,1,2,2,3,3,1,2,1,3,2,3/
